@@ -1,8 +1,7 @@
 ---
 
-# **Amazon USA Sales Analysis Project**
+# **ShopShere Sales Analysis Project**
 
-### **Difficulty Level: Advanced**
 
 ---
 
@@ -14,104 +13,128 @@ The project also focuses on data cleaning, handling null values, and solving rea
 
 An ERD diagram is included to visually represent the database schema and relationships between tables.
 
----
+![image](https://github.com/user-attachments/assets/ab73624c-8c8a-4fa7-9f80-9380f57aed73)
 
-![ERD Scratch](https://github.com/najirh/amazon_usa_project5/blob/main/erd2.png)
+
+---
+![image](https://github.com/user-attachments/assets/b99877b6-01e0-4244-9b0b-0c0144228c78)
+
 
 ## **Database Setup & Design**
 
 ### **Schema Structure**
 
 ```sql
-CREATE TABLE category
+-- Category Table 
+
+CREATE TABLE category 
 (
-  category_id	INT PRIMARY KEY,
-  category_name VARCHAR(20)
+category_id INT PRIMARY KEY,
+category_name VARCHAR(20)
 );
 
--- customers TABLE
+-- Customer's table
+
 CREATE TABLE customers
 (
-  customer_id INT PRIMARY KEY,	
-  first_name	VARCHAR(20),
-  last_name	VARCHAR(20),
-  state VARCHAR(20),
-  address VARCHAR(5) DEFAULT ('xxxx')
+customer_id INT PRIMARY KEY,	
+first_name VARCHAR(25),	
+last_name VARCHAR(25),	
+state VARCHAR(20),
+address VARCHAR(5) DEFAULT ('xxxx')
 );
 
--- sellers TABLE
+-- sellers table
+
 CREATE TABLE sellers
 (
-  seller_id INT PRIMARY KEY,
-  seller_name	VARCHAR(25),
-  origin VARCHAR(15)
+seller_id INT PRIMARY KEY,
+seller_name	VARCHAR(25),
+origin VARCHAR(5)
 );
+
+--updating data types 
+ALTER TABLE sellers
+ALTER COLUMN origin TYPE VARCHAR(10)
+;
+
 
 -- products table
-  CREATE TABLE products
-  (
-  product_id INT PRIMARY KEY,	
-  product_name VARCHAR(50),	
-  price	FLOAT,
-  cogs	FLOAT,
-  category_id INT, -- FK 
-  CONSTRAINT product_fk_category FOREIGN KEY(category_id) REFERENCES category(category_id)
-);
 
--- orders
-CREATE TABLE orders
+CREATE TABLE products
 (
-  order_id INT PRIMARY KEY, 	
-  order_date	DATE,
-  customer_id	INT, -- FK
-  seller_id INT, -- FK 
-  order_status VARCHAR(15),
-  CONSTRAINT orders_fk_customers FOREIGN KEY (customer_id) REFERENCES customers(customer_id),
-  CONSTRAINT orders_fk_sellers FOREIGN KEY (seller_id) REFERENCES sellers(seller_id)
+product_id INT PRIMARY KEY,
+product_name VARCHAR(50),	
+price FLOAT,	
+cogs FLOAT,
+category_id INT, -- FK  
+CONSTRAINT product_fk_category FOREIGN KEY (category_id) REFERENCES category(category_id)
 );
 
-CREATE TABLE order_items
+-- order table
+
+CREATE TABLE orders 
 (
-  order_item_id INT PRIMARY KEY,
-  order_id INT,	-- FK 
-  product_id INT, -- FK
-  quantity INT,	
-  price_per_unit FLOAT,
-  CONSTRAINT order_items_fk_orders FOREIGN KEY (order_id) REFERENCES orders(order_id),
-  CONSTRAINT order_items_fk_products FOREIGN KEY (product_id) REFERENCES products(product_id)
+order_id INT PRIMARY KEY,
+order_date DATE,
+customer_id	INT, -- FK
+seller_id INT, -- FK
+order_status VARCHAR(15),
+CONSTRAINT orders_fk_customers FOREIGN KEY (customer_id) REFERENCES customers(customer_id),
+CONSTRAINT orders_fk_sellers FOREIGN KEY (seller_id) REFERENCES sellers(seller_id)
 );
 
--- payment TABLE
+-- order item table
+
+CREATE TABLE order_item
+(
+order_item_id INT PRIMARY KEY,
+order_id INT, -- FK
+product_id INT, -- FK
+quantity INT,
+price_per_unit FLOAT,
+CONSTRAINT order_items_fk_orders FOREIGN KEY (order_id) REFERENCES orders(order_id),
+CONSTRAINT order_items_fk_products FOREIGN KEY (product_id) REFERENCES products(product_id) 
+)
+
+-- payments table 
+
 CREATE TABLE payments
 (
-  payment_id	
-  INT PRIMARY KEY,
-  order_id INT, -- FK 	
-  payment_date DATE,
-  payment_status VARCHAR(20),
-  CONSTRAINT payments_fk_orders FOREIGN KEY (order_id) REFERENCES orders(order_id)
+payment_id INT PRIMARY KEY,
+order_id INT,  -- FK
+payment_date DATE,
+payment_status VARCHAR(25),
+CONSTRAINT payment_fk_order FOREIGN KEY (order_id) REFERENCES orders(order_id)
 );
 
-CREATE TABLE shippings
+-- shipping table
+
+CREATE TABLE shipping
 (
-  shipping_id	INT PRIMARY KEY,
-  order_id	INT, -- FK
-  shipping_date DATE,	
-  return_date	 DATE,
-  shipping_providers	VARCHAR(15),
-  delivery_status VARCHAR(15),
-  CONSTRAINT shippings_fk_orders FOREIGN KEY (order_id) REFERENCES orders(order_id)
+shipping_id	INT PRIMARY KEY,
+order_id INT, -- FK
+shipping_date DATE,	
+return_date	DATE,
+shipping_providers VARCHAR (25),	
+delivery_status VARCHAR (20),
+CONSTRAINT shipping_fk_orders FOREIGN KEY (order_id) REFERENCES orders(order_id)
 );
+
+-- inventory table
 
 CREATE TABLE inventory
 (
-  inventory_id INT PRIMARY KEY,
-  product_id INT, -- FK
-  stock INT,
-  warehouse_id INT,
-  last_stock_date DATE,
-  CONSTRAINT inventory_fk_products FOREIGN KEY (product_id) REFERENCES products(product_id)
-  );
+inventory_id INT PRIMARY KEY,	
+product_id INT, --FK,
+stock INT,	
+warehouse_id INT, 
+last_stock_date DATE,
+CONSTRAINT inventory_fk_products FOREIGN KEY (product_id) REFERENCES products(product_id)
+);
+
+---End of Schema 
+
 ```
 
 ---
@@ -135,9 +158,9 @@ Null values were handled based on their context:
 
 ## **Objective**
 
-The primary objective of this project is to showcase SQL proficiency through complex queries that address real-world e-commerce business challenges. The analysis covers various aspects of e-commerce operations, including:
+The primary objective of this project is to showcase SQL proficiency through complex queries that address real-world e-commerce business challenges. The analysis covers various aspects of e-commerce/retail operations, including:
+- Sales trends 
 - Customer behavior
-- Sales trends
 - Inventory management
 - Payment and shipping analysis
 - Forecasting and product performance
@@ -168,7 +191,7 @@ SELECT
 	COUNT(o.order_id)  as total_orders
 FROM orders as o
 JOIN
-order_items as oi
+order_item as oi
 ON oi.order_id = o.order_id
 JOIN 
 products as p
@@ -188,10 +211,10 @@ SELECT
 	c.category_name,
 	SUM(oi.total_sale) as total_sale,
 	SUM(oi.total_sale)/
-					(SELECT SUM(total_sale) FROM order_items) 
+					(SELECT SUM(total_sale) FROM order_item) 
 					* 100
 	as contribution
-FROM order_items as oi
+FROM order_item as oi
 JOIN
 products as p
 ON p.product_id = oi.product_id
@@ -216,7 +239,7 @@ JOIN
 customers as c
 ON c.customer_id = o.customer_id
 JOIN 
-order_items as oi
+order_item as oi
 ON oi.order_id = o.order_id
 GROUP BY 1, 2
 HAVING  COUNT(o.order_id) > 5
@@ -242,7 +265,7 @@ SELECT
 			,2) as total_sale
 FROM orders as o
 JOIN
-order_items as oi
+order_item as oi
 ON oi.order_id = o.order_id
 WHERE o.order_date >= CURRENT_DATE - INTERVAL '1 year'
 GROUP BY 1, 2
@@ -293,7 +316,7 @@ JOIN
 customers as c
 ON o.customer_id = c.customer_id
 JOIN
-order_items as oi
+order_item as oi
 ON o.order_id = oi. order_id
 JOIN 
 products as p
@@ -325,7 +348,7 @@ JOIN
 customers as c
 ON c.customer_id = o.customer_id
 JOIN 
-order_items as oi
+order_item as oi
 ON oi.order_id = o.order_id
 GROUP BY 1, 2
 ```
@@ -364,7 +387,7 @@ JOIN
 customers as c
 ON c.customer_id = o.customer_id
 JOIN 
-shippings as s
+shipping as s
 ON o.order_id = s.order_id
 WHERE s.shipping_date - o.order_date > 3
 ```
@@ -401,7 +424,7 @@ JOIN
 sellers as s
 ON o.seller_id = s.seller_id
 JOIN 
-order_items as oi
+order_item as oi
 ON oi.order_id = o.order_id
 GROUP BY 1, 2
 ORDER BY 3 DESC
@@ -456,7 +479,7 @@ FROM
 	p.product_name,
 	-- SUM(total_sale - (p.cogs * oi.quantity)) as profit,
 	SUM(total_sale - (p.cogs * oi.quantity))/sum(total_sale) * 100 as profit_margin
-FROM order_items as oi
+FROM order_item as oi
 JOIN 
 products as p
 ON oi.product_id = p.product_id
@@ -475,7 +498,7 @@ SELECT
 	COUNT(*) as total_unit_sold,
 	SUM(CASE WHEN o.order_status = 'Returned' THEN 1 ELSE 0 END) as total_returned,
 	SUM(CASE WHEN o.order_status = 'Returned' THEN 1 ELSE 0 END)::numeric/COUNT(*)::numeric * 100 as return_percentage
-FROM order_items as oi
+FROM order_item as oi
 JOIN 
 products as p
 ON oi.product_id = p.product_id
@@ -504,7 +527,7 @@ FROM orders as o
 JOIN 
 cte1
 ON cte1.seller_id = o.seller_id
-JOIN order_items as oi
+JOIN order_item as oi
 ON o.order_id = oi.order_id
 GROUP BY 1
 ```
@@ -532,7 +555,7 @@ JOIN
 customers as c
 ON c.customer_id = o.customer_id
 JOIN
-order_items as oi
+order_item as oi
 ON oi.order_id = o.order_id
 GROUP BY 1)
 ```
@@ -551,7 +574,7 @@ SELECT * FROM
 	DENSE_RANK() OVER(PARTITION BY c.state ORDER BY COUNT(o.order_id) DESC) as rank
 FROM orders as o
 JOIN 
-order_items as oi
+order_item as oi
 ON oi.order_id = o.order_id
 JOIN 
 customers as c
@@ -574,10 +597,10 @@ SELECT
 	COALESCE(AVG(s.return_date - s.shipping_date), 0) as average_days
 FROM orders as o
 JOIN 
-order_items as oi
+order_item as oi
 ON oi.order_id = o.order_id
 JOIN 
-shippings as s
+shipping as s
 ON 
 s.order_id = o.order_id
 GROUP BY 1
@@ -597,7 +620,7 @@ SELECT
 	SUM(oi.total_sale) as revenue
 FROM orders as o
 JOIN 
-order_items as oi
+order_item as oi
 ON oi.order_id = o.order_id
 JOIN 
 products as p
@@ -616,7 +639,7 @@ SELECT
 	SUM(oi.total_sale) as revenue
 FROM orders as o
 JOIN 
-order_items as oi
+order_item as oi
 ON oi.order_id = o.order_id
 JOIN 
 products as p
@@ -727,24 +750,18 @@ call add_sales
 
 ## **Learning Outcomes**
 
-This project enabled me to:
-- Design and implement a normalized database schema.
-- Clean and preprocess real-world datasets for analysis.
-- Use advanced SQL techniques, including window functions, subqueries, and joins.
-- Conduct in-depth business analysis using SQL.
-- Optimize query performance and handle large datasets efficiently.
+Through this project, I was able to:
+
+-Develop and implement a normalized database schema.
+-Cleanse and preprocess real-world datasets for analytical purposes.
+-Apply advanced SQL techniques, such as window functions, subqueries, and joins.
+-Perform comprehensive business analysis using SQL.
+-Enhance query performance and manage large datasets effectively.
 
 ---
 
 ## **Conclusion**
 
-This advanced SQL project successfully demonstrates my ability to solve real-world e-commerce problems using structured queries. From improving customer retention to optimizing inventory and logistics, the project provides valuable insights into operational challenges and solutions.
+This advanced SQL project successfully demonstrates my ability to solve real-world retail problems using structured queries. From improving customer retention to optimizing inventory and logistics, the project provides valuable insights into operational challenges and solutions.
 
 By completing this project, I have gained a deeper understanding of how SQL can be used to tackle complex data problems and drive business decision-making.
-
----
-
-### **Entity Relationship Diagram (ERD)**
-![ERD](https://github.com/najirh/amazon_usa_project5/blob/main/erd.png)
-
----
