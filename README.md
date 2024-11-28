@@ -765,3 +765,6 @@ Through this project, I was able to:
 This advanced SQL project successfully demonstrates my ability to solve real-world retail problems using structured queries. From improving customer retention to optimizing inventory and logistics, the project provides valuable insights into operational challenges and solutions.
 
 By completing this project, I have gained a deeper understanding of how SQL can be used to tackle complex data problems and drive business decision-making.
+
+![image](https://github.com/user-attachments/assets/ca54a4b7-e50c-4d25-bd55-7fda5a695489)
+
