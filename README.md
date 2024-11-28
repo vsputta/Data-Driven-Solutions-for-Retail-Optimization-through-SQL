@@ -752,11 +752,11 @@ call add_sales
 
 Through this project, I was able to:
 
--Develop and implement a normalized database schema.
--Cleanse and preprocess real-world datasets for analytical purposes.
--Apply advanced SQL techniques, such as window functions, subqueries, and joins.
--Perform comprehensive business analysis using SQL.
--Enhance query performance and manage large datasets effectively.
+- Develop and implement a normalized database schema.
+- Cleanse and preprocess real-world datasets for analytical purposes.
+- Apply advanced SQL techniques, such as window functions, subqueries, and joins.
+- Perform comprehensive business analysis using SQL.
+- Enhance query performance and manage large datasets effectively.
 
 ---
 
