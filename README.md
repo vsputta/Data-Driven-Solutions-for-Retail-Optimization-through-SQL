@@ -13,7 +13,7 @@ The project also focuses on data cleaning, handling null values, and solving rea
 
 An ERD diagram is included to visually represent the database schema and relationships between tables.
 
-![image](https://github.com/user-attachments/assets/ab73624c-8c8a-4fa7-9f80-9380f57aed73)
+<img src="https://github.com/user-attachments/assets/ab73624c-8c8a-4fa7-9f80-9380f57aed73" alt="Sample Image" width="300"/>
 
 
 ---
